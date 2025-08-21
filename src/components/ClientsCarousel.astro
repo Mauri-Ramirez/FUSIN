@@ -1,0 +1,23 @@
+---
+/** logos: Array<{ src: string; alt: string }> */
+const { logos = [] } = Astro.props;
+const track = [...logos, ...logos]; // duplicamos para efecto infinito
+---
+<section id="clientes" class="py-16">
+  <div class="container">
+    <div class="mx-auto max-w-2xl text-center mb-10">
+      <h2 class="text-3xl font-semibold">Empresas que confían en FUSIN</h2>
+      <p class="mt-3 text-slate-600">Sectores residencial, comercial e industrial.</p>
+    </div>
+
+    <div class="relative overflow-hidden rounded-2xl border bg-white/70 p-6 shadow-soft">
+      <ul class="flex w-[200%] items-center gap-12 animate-marquee [animation-duration:25s] hover:[animation-play-state:paused]">
+        {track.map((logo, i) => (
+          <li class="shrink-0" aria-hidden={i >= logos.length ? 'true' : 'false'}>
+            <img src={logo.src} alt={logo.alt} class="h-10 w-auto grayscale hover:grayscale-0 transition" loading="lazy" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>

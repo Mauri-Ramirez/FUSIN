@@ -1,0 +1,33 @@
+---
+/**
+ * Props opcionales: items: Array<{ title: string; desc: string; icon?: string }>
+ */
+const { items = [
+  { title: 'Residencial',  desc: 'Hogares, conjuntos y fincas.', icon: '🏠' },
+  { title: 'Comercial',    desc: 'Locales, restaurantes y oficinas.', icon: '🏢' },
+  { title: 'Industrial',   desc: 'Plantas y bodegas.', icon: '🏭' },
+  { title: 'Vehicular',    desc: 'Flotas y transporte.', icon: '🚐' },
+  { title: 'Desinfección', desc: 'Sanitización de ambientes.', icon: '🧴' },
+  { title: 'Plagas específicas', desc: 'Cucarachas, roedores, zancudos, etc.', icon: '🐛' },
+] } = Astro.props;
+---
+<section id="servicios" class="py-16">
+  <div class="container">
+    <slot name="title" />
+    <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((s) => (
+        <li class="rounded-2xl border bg-white/70 p-6 shadow-soft">
+          <div class="text-3xl">{s.icon ?? '🧰'}</div>
+          <h3 class="mt-4 text-lg font-semibold">{s.title}</h3>
+          <p class="mt-2 text-slate-600">{s.desc}</p>
+          <div class="mt-4 h-px bg-slate-200"></div>
+          <ul class="mt-4 space-y-1 text-sm text-slate-600">
+            <li>• Productos certificados</li>
+            <li>• Técnicos acreditados</li>
+            <li>• Garantía de servicio</li>
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>

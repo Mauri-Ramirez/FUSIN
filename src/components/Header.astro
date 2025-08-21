@@ -1,0 +1,51 @@
+---
+const phone = '+57 300 000 0000';
+const wa = 'https://wa.me/573000000000?text=Hola%20FUSIN,%20quiero%20una%20cotizaci%C3%B3n';
+---
+<header class="fixed inset-x-0 top-0 z-50">
+  <div class="container mx-auto">
+    <nav class="mt-4 flex items-center justify-between rounded-2xl border border-white/30 bg-white/70 px-4 py-3 backdrop-blur shadow-soft">
+      <a href="/" class="flex items-center gap-2 font-semibold">
+        <img src="/favicon.svg" alt="FUSIN" class="h-7 w-7" />
+        <span>FUSIN</span>
+      </a>
+
+      <button id="menu-toggle" aria-controls="mobile-menu" aria-expanded="false" class="lg:hidden rounded-xl border px-3 py-2">Menú</button>
+
+      <ul class="hidden items-center gap-6 lg:flex">
+        <li><a href="#servicios" class="hover:underline">Servicios</a></li>
+        <li><a href="#evidencias" class="hover:underline">Evidencias</a></li>
+        <li><a href="#clientes" class="hover:underline">Clientes</a></li>
+        <li><a href="#contacto" class="hover:underline">Contacto</a></li>
+      </ul>
+
+      <div class="hidden items-center gap-3 lg:flex">
+        <a href={wa} target="_blank" rel="noopener" class="btn btn-primary">WhatsApp</a>
+        <a href={`tel:${phone.replace(/\s/g,'')}`} class="btn btn-ghost">Llamar</a>
+      </div>
+    </nav>
+
+    <div id="mobile-menu" class="mt-2 hidden rounded-2xl border bg-white/90 p-4 backdrop-blur shadow-soft lg:hidden">
+      <ul class="flex flex-col gap-4">
+        <li><a href="#servicios" class="block">Servicios</a></li>
+        <li><a href="#evidencias" class="block">Evidencias</a></li>
+        <li><a href="#clientes" class="block">Clientes</a></li>
+        <li><a href="#contacto" class="block">Contacto</a></li>
+      </ul>
+      <div class="mt-4 flex gap-3">
+        <a href={wa} target="_blank" rel="noopener" class="btn btn-primary grow">WhatsApp</a>
+        <a href={`tel:${phone.replace(/\s/g,'')}`} class="btn btn-ghost grow">Llamar</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  const btn = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    const expanded = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!expanded));
+    menu?.classList.toggle('hidden');
+  });
+</script>

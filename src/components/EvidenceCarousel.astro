@@ -1,0 +1,61 @@
+---
+/**
+ * Props:
+ *  id?: string            -> para múltiples carruseles en una página
+ *  images: Array<{ src: string; alt: string }>
+ *  autoplayMs?: number    -> intervalo en ms (ej: 4000)
+ */
+const { id = 'evidencias', images = [], autoplayMs = 4000 } = Astro.props;
+const viewportId = `${id}-viewport`;
+---
+<section id="evidencias" class="py-16">
+  <div class="container">
+    <div class="mx-auto mb-10 max-w-2xl text-center">
+      <h2 class="text-3xl font-semibold">Evidencias de trabajos</h2>
+      <p class="mt-3 text-slate-600">Antes / después y registros fotográficos reales.</p>
+    </div>
+
+    <div class="relative">
+      <!-- Botones -->
+      <button aria-label="Anterior" class="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border bg-white/80 px-3 py-2 shadow-soft hover:bg-white" data-action="prev">‹</button>
+      <button aria-label="Siguiente" class="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border bg-white/80 px-3 py-2 shadow-soft hover:bg-white" data-action="next">›</button>
+
+      <!-- Viewport -->
+      <div id={viewportId} class="no-scrollbar overflow-x-auto scroll-smooth snap-x snap-mandatory">
+        <ul class="flex gap-4 p-1">
+          {images.map((img) => (
+            <li class="snap-center shrink-0 w-[85%] md:w-[60%] lg:w-[45%]">
+              <figure class="overflow-hidden rounded-3xl border bg-white/70 shadow-soft">
+                <img src={img.src} alt={img.alt} class="h-[360px] w-full object-cover" loading="lazy" />
+              </figure>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  const root = document.currentScript?.closest('section');
+  const vp = root?.querySelector('#' + {viewportId});
+  const prev = root?.querySelector('[data-action="prev"]');
+  const next = root?.querySelector('[data-action="next"]');
+
+  const step = () => vp.clientWidth * 0.9;
+
+  prev?.addEventListener('click', () => vp.scrollBy({ left: -step(), behavior: 'smooth' }));
+  next?.addEventListener('click', () => vp.scrollBy({ left:  step(), behavior: 'smooth' }));
+
+  // Autoplay con pausa al hover/focus
+  let timer;
+  const start = () => { stop(); timer = setInterval(() => next?.click(), Number({autoplayMs} ?? 4000)); };
+  const stop = () => timer && clearInterval(timer);
+
+  vp?.addEventListener('pointerenter', stop);
+  vp?.addEventListener('pointerleave', start);
+  vp?.addEventListener('focusin', stop);
+  vp?.addEventListener('focusout', start);
+
+  start();
+</script>
