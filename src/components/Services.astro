@@ -1,33 +1,111 @@
 ---
+import { servicios } from '../data/services.js';
+
 /**
- * Props opcionales: items: Array<{ title: string; desc: string; icon?: string }>
+ * Renderizado de la sección de servicios
+ * - Se importa el arreglo de servicios desde data/services.js
+ * - Cada servicio tiene: title, img y desc
+ * - desc puede ser un string (texto) o un array (lista de pasos)
  */
-const { items = [
-  { title: 'Residencial',  desc: 'Hogares, conjuntos y fincas.', icon: '🏠' },
-  { title: 'Comercial',    desc: 'Locales, restaurantes y oficinas.', icon: '🏢' },
-  { title: 'Industrial',   desc: 'Plantas y bodegas.', icon: '🏭' },
-  { title: 'Vehicular',    desc: 'Flotas y transporte.', icon: '🚐' },
-  { title: 'Desinfección', desc: 'Sanitización de ambientes.', icon: '🧴' },
-  { title: 'Plagas específicas', desc: 'Cucarachas, roedores, zancudos, etc.', icon: '🐛' },
-] } = Astro.props;
 ---
+
 <section id="servicios" class="py-16">
   <div class="container">
+    <!-- Título (slot para poder personalizar desde la página) -->
     <slot name="title" />
+
+    <!-- Grid responsive para organizar los servicios -->
     <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {items.map((s) => (
-        <li class="rounded-2xl border bg-white/70 p-6 shadow-soft">
-          <div class="text-3xl">{s.icon ?? '🧰'}</div>
-          <h3 class="mt-4 text-lg font-semibold">{s.title}</h3>
-          <p class="mt-2 text-slate-600">{s.desc}</p>
-          <div class="mt-4 h-px bg-slate-200"></div>
-          <ul class="mt-4 space-y-1 text-sm text-slate-600">
-            <li>• Productos certificados</li>
-            <li>• Técnicos acreditados</li>
-            <li>• Garantía de servicio</li>
-          </ul>
+      {servicios.map((s, i) => (
+        <li
+          class="service-card group [perspective:1200px] cursor-pointer"
+          data-index={i}
+        >
+          <div
+            class="card-inner relative h-80 w-full rounded-2xl transition-transform duration-700 ease-in-out [transform-style:preserve-3d]"
+          >
+            <!-- Frente de la tarjeta -->
+            <div class="absolute inset-0 rounded-2xl overflow-hidden [backface-visibility:hidden]">
+              <img
+                src={s.img}
+                alt={s.title}
+                class="h-full w-full object-cover"
+              />
+              <div class="absolute inset-0 flex items-end bg-black/40 p-4">
+                <h3 class="text-lg font-semibold text-white">{s.title}</h3>
+              </div>
+            </div>
+
+            <!-- Reverso de la tarjeta -->
+            <div
+              class="absolute inset-0 flex items-center justify-center rounded-2xl bg-emerald-600 p-6 text-center text-white [transform:rotateY(180deg)] [backface-visibility:hidden]"
+            >
+              <!-- Render condicional: si es array => lista, si es string => párrafo -->
+              {
+                Array.isArray(s.desc) ? (
+                  <ul class="list-disc list-inside text-left space-y-1 text-sm">
+                    {s.desc.map((step) => (
+                      <li>{step}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p class="text-sm">{s.desc}</p>
+                )
+              }
+            </div>
+          </div>
         </li>
       ))}
     </ul>
   </div>
+
+  <!-- Script para manejar el flip en móviles -->
+  <script>
+    const cards = document.querySelectorAll('.service-card');
+    cards.forEach((card) => {
+      card.addEventListener('click', () => {
+        const isAlreadyFlipped = card.classList.contains('flipped');
+
+        // Cierra todas las tarjetas
+        cards.forEach((c) => c.classList.remove('flipped'));
+
+        // Si no estaba abierta, ahora sí se abre
+        if (!isAlreadyFlipped) {
+          card.classList.add('flipped');
+        }
+      });
+    });
+  </script>
 </section>
+
+<style>
+/* Estado normal */
+.service-card .card-inner {
+  transform: rotateY(0deg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.7s ease-in-out,
+    box-shadow 0.7s ease-in-out 0.1s; /* sombra con pequeño delay */
+}
+
+/* Estado flipped con sombra más marcada */
+.service-card.flipped .card-inner {
+  transform: rotateY(180deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover en desktop/tablet */
+@media (hover: hover) {
+  .service-card:hover .card-inner {
+    transform: rotateY(180deg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  }
+}
+
+/* Responsividad: ajuste de altura en móviles */
+@media (max-width: 640px) {
+  .service-card .card-inner {
+    height: 300px; /* más compacta en móvil */
+  }
+}
+</style>

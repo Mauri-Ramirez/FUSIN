@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import Hero from "../components/Hero.astro";
 import SectionTitle from "../components/SectionTitle.astro";
 import Services from "../components/Services.astro";
+import About from "../components/About.astro"; // 👈 nueva importación
 import EvidenceCarousel from "../components/EvidenceCarousel.astro";
 import ClientsCarousel from "../components/ClientsCarousel.astro";
 import CTA from "../components/CTA.astro";
@@ -19,12 +20,16 @@ const evidencias = [
   { src: "/images/evidencia-03.jpg", alt: "Trabajo 3" },
 ];
 ---
+
 <BaseLayout title="FUSIN — Control de plagas profesional">
   <Hero />
 
   <Services>
     <SectionTitle slot="title" title="Servicios" subtitle="Soluciones para hogar, comercio e industria" />
   </Services>
+
+  <!-- 👇 Nueva sección About -->
+  <About />
 
   <EvidenceCarousel images={evidencias} />
 
