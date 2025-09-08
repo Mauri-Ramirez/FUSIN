@@ -1,17 +1,39 @@
 ---
-const phone = '+57 300 000 0000';
 const wa = 'https://wa.me/573000000000?text=Hola%20FUSIN,%20quiero%20una%20cotizaci%C3%B3n';
 ---
+
 <header class="fixed inset-x-0 top-0 z-50">
   <div class="container mx-auto">
     <nav class="mt-4 flex items-center justify-between rounded-2xl border border-white/30 bg-white/70 px-4 py-3 backdrop-blur shadow-soft">
+
+      <!-- Logo -->
       <a href="/" class="flex items-center gap-2 font-semibold">
-        <img src="/favicon.svg" alt="FUSIN" class="h-7 w-7" />
+        <img src="/logos/sinfondo.png" alt="FUSIN" class="h-7 w-7" />
         <span>FUSIN</span>
       </a>
 
-      <button id="menu-toggle" aria-controls="mobile-menu" aria-expanded="false" class="lg:hidden rounded-xl border px-3 py-2">Menú</button>
+      <!-- BOTÓN: menú móvil (hamburguesa con 3 spans) -->
+      <button
+        id="menu-toggle"
+        aria-controls="mobile-menu"
+        aria-expanded="false"
+        aria-label="Abrir menú"
+        class="lg:hidden relative w-10 h-10 flex items-center justify-center rounded-xl border p-2"
+      >
+        <!--
+          Cada 'line' es una barra:
+          - están centradas con left:50% top:50% y luego se desplazan con translateY.
+          - Class names de Tailwind controlan transitions/positions.
+        -->
+        <span id="burger-top"
+              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-2 w-6 h-[2px] bg-current rounded transition-transform duration-300 origin-center"></span>
+        <span id="burger-mid"
+              class="absolute left-1/2 top-1/2 -translate-x-1/2 w-6 h-[2px] bg-current rounded transition-opacity duration-300 origin-center"></span>
+        <span id="burger-bottom"
+              class="absolute left-1/2 top-1/2 -translate-x-1/2 translate-y-2 w-6 h-[2px] bg-current rounded transition-transform duration-300 origin-center"></span>
+      </button>
 
+      <!-- Menú desktop -->
       <ul class="hidden items-center gap-6 lg:flex">
         <li><a href="#servicios" class="hover:underline">Servicios</a></li>
         <li><a href="#evidencias" class="hover:underline">Evidencias</a></li>
@@ -19,33 +41,146 @@ const wa = 'https://wa.me/573000000000?text=Hola%20FUSIN,%20quiero%20una%20cotiz
         <li><a href="#contacto" class="hover:underline">Contacto</a></li>
       </ul>
 
-      <div class="hidden items-center gap-3 lg:flex">
-        <a href={wa} target="_blank" rel="noopener" class="btn btn-primary">WhatsApp</a>
-        <a href={`tel:${phone.replace(/\s/g,'')}`} class="btn btn-ghost">Llamar</a>
+      <!-- CTA WhatsApp (solo desktop) -->
+      <div class="hidden lg:flex">
+        <a href={wa} target="_blank" rel="noopener" class="btn btn-primary flex items-center gap-2" aria-label="Chatear por WhatsApp">
+          <!-- SVG de WhatsApp (completo y visible) -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="h-5 w-5 fill-white">
+            <path d="M380.9 97.1C339 55.1 283.2 32 224.2 32 100.4 32 0 132.3 
+              0 256c0 45.1 11.8 89.3 34.3 128.1L0 480l99.6-32.6c36.4 
+              19.9 77.5 30.5 119.9 30.5h.1c123.7 0 224.4-100.3 
+              224.4-224 0-59-23.2-114.8-63.1-156.9zM224.6 
+              438.6h-.1c-36.6 0-72.5-9.8-103.7-28.3l-7.4-4.4-61.6 
+              20.2 20.3-60.1-4.9-7.8C49.4 323.2 38.2 289.9 
+              38.2 256.1c0-102.9 83.8-186.7 186.6-186.7 49.9 
+              0 96.8 19.5 132.1 55 35.3 35.5 54.7 82.5 54.7 
+              132.3-.1 102.8-83.9 186.9-186.8 186.9zm101.1-138.2c-5.5-2.8-32.5-16-37.6-17.9-5-1.9-8.7-2.8-12.4 
+              2.8-3.7 5.6-14.3 17.9-17.5 21.6-3.2 3.7-6.4 
+              4.2-11.9 1.4-32.5-16.2-53.8-28.9-75.2-65.4-5.7-9.8 
+              5.7-9.1 16.2-30.2 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.4-29.9-17-41-4.5-10.8-9.1-9.3-12.4-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 
+              0-9.7 1.4-14.8 6.9-5 5.6-19.5 19.1-19.5 46.6s20 
+              54 22.8 57.6c2.8 3.7 39.3 60 95.1 
+              84.2 13.3 5.7 23.7 9.1 31.8 11.7 13.3 4.2 
+              25.5 3.6 35.1 2.2 10.7-1.6 32.5-13.2 
+              37.1-26 4.6-12.8 4.6-23.7 
+              3.2-26.1-1.3-2.5-5-3.9-10.5-6.7z"/>
+          </svg>
+          WhatsApp
+        </a>
       </div>
     </nav>
 
-    <div id="mobile-menu" class="mt-2 hidden rounded-2xl border bg-white/90 p-4 backdrop-blur shadow-soft lg:hidden">
+    <!-- MENÚ MÓVIL (oculto por defecto + animación: scale & opacity) -->
+    <div id="mobile-menu"
+         class="mt-2 hidden origin-top scale-95 opacity-0 transform rounded-2xl border bg-white/90 p-4 backdrop-blur shadow-soft transition-all duration-300 ease-out lg:hidden">
       <ul class="flex flex-col gap-4">
         <li><a href="#servicios" class="block">Servicios</a></li>
         <li><a href="#evidencias" class="block">Evidencias</a></li>
         <li><a href="#clientes" class="block">Clientes</a></li>
         <li><a href="#contacto" class="block">Contacto</a></li>
       </ul>
-      <div class="mt-4 flex gap-3">
-        <a href={wa} target="_blank" rel="noopener" class="btn btn-primary grow">WhatsApp</a>
-        <a href={`tel:${phone.replace(/\s/g,'')}`} class="btn btn-ghost grow">Llamar</a>
-      </div>
     </div>
   </div>
 </header>
 
+<!-- BOTÓN FLOTANTE WhatsApp SOLO MOBILE -->
+<a href={wa} target="_blank" rel="noopener" aria-label="Abrir WhatsApp para cotizar"
+   class="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-600 shadow-lg hover:bg-emerald-700 transition lg:hidden">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="h-7 w-7 fill-white">
+    <path d="M380.9 97.1C339 55.1 283.2 32 224.2 32 100.4 32 0 132.3 
+      0 256c0 45.1 11.8 89.3 34.3 128.1L0 480l99.6-32.6c36.4 
+      19.9 77.5 30.5 119.9 30.5h.1c123.7 0 224.4-100.3 
+      224.4-224 0-59-23.2-114.8-63.1-156.9zM224.6 
+      438.6h-.1c-36.6 0-72.5-9.8-103.7-28.3l-7.4-4.4-61.6 
+      20.2 20.3-60.1-4.9-7.8C49.4 323.2 38.2 289.9 
+      38.2 256.1c0-102.9 83.8-186.7 186.6-186.7 49.9 
+      0 96.8 19.5 132.1 55 35.3 35.5 54.7 82.5 54.7 
+      132.3-.1 102.8-83.9 186.9-186.8 186.9zm101.1-138.2c-5.5-2.8-32.5-16-37.6-17.9-5-1.9-8.7-2.8-12.4 
+      2.8-3.7 5.6-14.3 17.9-17.5 21.6-3.2 3.7-6.4 
+      4.2-11.9 1.4-32.5-16.2-53.8-28.9-75.2-65.4-5.7-9.8 
+      5.7-9.1 16.2-30.2 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.4-29.9-17-41-4.5-10.8-9.1-9.3-12.4-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 
+      0-9.7 1.4-14.8 6.9-5 5.6-19.5 19.1-19.5 46.6s20 
+      54 22.8 57.6c2.8 3.7 39.3 60 95.1 
+      84.2 13.3 5.7 23.7 9.1 31.8 11.7 13.3 4.2 
+      25.5 3.6 35.1 2.2 10.7-1.6 32.5-13.2 
+      37.1-26 4.6-12.8 4.6-23.7 
+      3.2-26.1-1.3-2.5-5-3.9-10.5-6.7z"/>
+  </svg>
+</a>
+
+<!-- SCRIPT: encapsulado y protegido (no genera variables globales duplicadas) -->
 <script is:inline>
-  const btn = document.getElementById('menu-toggle');
-  const menu = document.getElementById('mobile-menu');
-  btn?.addEventListener('click', () => {
+(() => {
+  const root = document.currentScript?.closest('header') ?? document.body;
+  const btn = root.querySelector('#menu-toggle');
+  const menu = root.querySelector('#mobile-menu');
+  const top = root.querySelector('#burger-top');
+  const mid = root.querySelector('#burger-mid');
+  const bottom = root.querySelector('#burger-bottom');
+
+  if (!btn || !menu || menu.dataset.fusinInitialized === 'true') return;
+  menu.dataset.fusinInitialized = 'true';
+
+  btn.addEventListener('click', () => {
     const expanded = btn.getAttribute('aria-expanded') === 'true';
     btn.setAttribute('aria-expanded', String(!expanded));
-    menu?.classList.toggle('hidden');
+
+    /* ---- Menu animation (fade + scale) ---- */
+    if (!expanded) {
+      // abrir: quitar hidden -> animar a visible
+      menu.classList.remove('hidden');
+      // pequeño timeout para forzar reflow y que la transición se ejecute
+      setTimeout(() => {
+        menu.classList.remove('opacity-0', 'scale-95');
+        menu.classList.add('opacity-100', 'scale-100');
+      }, 10);
+    } else {
+      // cerrar: animar a oculto, luego añadir hidden al terminar
+      menu.classList.remove('opacity-100', 'scale-100');
+      menu.classList.add('opacity-0', 'scale-95');
+      setTimeout(() => menu.classList.add('hidden'), 300);
+    }
+
+    /* ---- Burger -> X animation (usando spans CSS) ----
+       - Top line: -translate-y-2  -> translate-y-0 + rotate-45
+       - Mid line: opacity toggled
+       - Bottom line: translate-y-2 -> translate-y-0 + -rotate-45
+    */
+    if (!expanded) {
+      // abrir => formar X
+      top.classList.remove('-translate-y-2');
+      top.classList.add('translate-y-0','rotate-45');
+
+      mid.classList.add('opacity-0');
+
+      bottom.classList.remove('translate-y-2');
+      bottom.classList.add('translate-y-0','-rotate-45');
+    } else {
+      // cerrar => volver a hamburguesa
+      top.classList.remove('translate-y-0','rotate-45');
+      top.classList.add('-translate-y-2');
+
+      mid.classList.remove('opacity-0');
+
+      bottom.classList.remove('translate-y-0','-rotate-45');
+      bottom.classList.add('translate-y-2');
+    }
   });
+
+  // UX extra: cerrar menú si se hace click en un enlace dentro
+  menu.addEventListener('click', (e) => {
+    const a = e.target.closest('a');
+    if (!a) return;
+    // animación de cierre idéntica a arriba
+    menu.classList.remove('opacity-100', 'scale-100');
+    menu.classList.add('opacity-0', 'scale-95');
+    setTimeout(() => menu.classList.add('hidden'), 300);
+
+    // reset burger -> hamburguesa
+    btn.setAttribute('aria-expanded', 'false');
+    top.classList.remove('translate-y-0','rotate-45'); top.classList.add('-translate-y-2');
+    mid.classList.remove('opacity-0');
+    bottom.classList.remove('translate-y-0','-rotate-45'); bottom.classList.add('translate-y-2');
+  });
+})();
 </script>

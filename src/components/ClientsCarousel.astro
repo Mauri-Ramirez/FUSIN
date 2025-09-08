@@ -1,8 +1,17 @@
 ---
-/** logos: Array<{ src: string; alt: string }> */
+/**
+ * ClientsCarousel.astro
+ */
 const { logos = [] } = Astro.props;
-const track = [...logos, ...logos]; // duplicamos para efecto infinito
+
+// duplicamos para el loop infinito
+const track = [...logos, ...logos];
+
+// calculamos duración dinámicamente: 3s por logo
+const durationPerLogo = 3;
+const animationDuration = `${logos.length * durationPerLogo}s`;
 ---
+
 <section id="clientes" class="py-16">
   <div class="container">
     <div class="mx-auto max-w-2xl text-center mb-10">
@@ -11,13 +20,51 @@ const track = [...logos, ...logos]; // duplicamos para efecto infinito
     </div>
 
     <div class="relative overflow-hidden rounded-2xl border bg-white/70 p-6 shadow-soft">
-      <ul class="flex w-[200%] items-center gap-12 animate-marquee [animation-duration:25s] hover:[animation-play-state:paused]">
+      <ul
+        class="marquee-track"
+        style={`--marquee-duration: ${animationDuration};`}
+      >
         {track.map((logo, i) => (
-          <li class="shrink-0" aria-hidden={i >= logos.length ? 'true' : 'false'}>
-            <img src={logo.src} alt={logo.alt} class="h-10 w-auto grayscale hover:grayscale-0 transition" loading="lazy" />
+          <li class="logo-item" aria-hidden={i >= logos.length ? 'true' : 'false'}>
+            <img
+              src={logo.src}
+              alt={logo.alt}
+              class="h-10 w-auto object-contain"
+              loading="lazy"
+              decoding="async"
+            />
           </li>
         ))}
       </ul>
     </div>
   </div>
 </section>
+
+<style>
+:root {
+  --marquee-gap: 3rem;
+}
+
+.marquee-track {
+  display: flex;
+  align-items: center;
+  gap: var(--marquee-gap);
+  width: max-content;
+  animation: marquee var(--marquee-duration, 25s) linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+.logo-item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Animación infinita */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+</style>

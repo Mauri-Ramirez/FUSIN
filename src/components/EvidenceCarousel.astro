@@ -1,15 +1,21 @@
 ---
 /**
+ * EvidenceCarousel.astro (versión con barra tipo Instagram usando scaleX)
+ * 
  * Props:
- *  id?: string            -> para múltiples carruseles en una página
  *  images: Array<{ src: string; alt: string }>
- *  autoplayMs?: number    -> intervalo en ms (ej: 4000)
+ * 
+ * - Autoplay cada 4s.
+ * - Botones prev/next.
+ * - Barra de progreso minimalista responsive (Tailwind).
+ * - Uso de transform: scaleX para mejor rendimiento (GPU).
  */
-const { id = 'evidencias', images = [], autoplayMs = 4000 } = Astro.props;
-const viewportId = `${id}-viewport`;
+const { images = [] } = Astro.props;
 ---
+
 <section id="evidencias" class="py-16">
   <div class="container">
+    <!-- Título -->
     <div class="mx-auto mb-10 max-w-2xl text-center">
       <h2 class="text-3xl font-semibold">Evidencias de trabajos</h2>
       <p class="mt-3 text-slate-600">Antes / después y registros fotográficos reales.</p>
@@ -17,11 +23,18 @@ const viewportId = `${id}-viewport`;
 
     <div class="relative">
       <!-- Botones -->
-      <button aria-label="Anterior" class="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border bg-white/80 px-3 py-2 shadow-soft hover:bg-white" data-action="prev">‹</button>
-      <button aria-label="Siguiente" class="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border bg-white/80 px-3 py-2 shadow-soft hover:bg-white" data-action="next">›</button>
+      <button type="button" aria-label="Anterior" data-action="prev"
+        class="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-full border bg-white/80 px-3 py-2 shadow hover:bg-white">
+        ‹
+      </button>
+      <button type="button" aria-label="Siguiente" data-action="next"
+        class="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-full border bg-white/80 px-3 py-2 shadow hover:bg-white">
+        ›
+      </button>
 
       <!-- Viewport -->
-      <div id={viewportId} class="no-scrollbar overflow-x-auto scroll-smooth snap-x snap-mandatory">
+      <div id="evidencias-viewport" data-viewport tabindex="0" role="region" aria-label="Carrusel de evidencias"
+        class="no-scrollbar overflow-x-auto scroll-smooth snap-x snap-mandatory">
         <ul class="flex gap-4 p-1">
           {images.map((img) => (
             <li class="snap-center shrink-0 w-[85%] md:w-[60%] lg:w-[45%]">
@@ -32,30 +45,90 @@ const viewportId = `${id}-viewport`;
           ))}
         </ul>
       </div>
+
+      <!-- Barra de progreso -->
+      <div id="evi-progress" class="mt-6 flex justify-center gap-2"></div>
     </div>
   </div>
 </section>
 
+<!-- Script -->
 <script is:inline>
-  const root = document.currentScript?.closest('section');
-  const vp = root?.querySelector('#' + {viewportId});
-  const prev = root?.querySelector('[data-action="prev"]');
-  const next = root?.querySelector('[data-action="next"]');
+(() => {
+  const ROOT_ID = 'evidencias';
+  const AUTOPLAY_MS = 4000; // tiempo entre slides
+  const root = document.getElementById(ROOT_ID);
+  if (!root) return;
 
-  const step = () => vp.clientWidth * 0.9;
+  const vp = root.querySelector('[data-viewport]');
+  const prev = root.querySelector('[data-action="prev"]');
+  const next = root.querySelector('[data-action="next"]');
+  const progressContainer = root.querySelector('#evi-progress');
 
-  prev?.addEventListener('click', () => vp.scrollBy({ left: -step(), behavior: 'smooth' }));
-  next?.addEventListener('click', () => vp.scrollBy({ left:  step(), behavior: 'smooth' }));
+  if (!vp) return;
+  const items = vp.querySelectorAll('li');
+  if (!items.length) return;
 
-  // Autoplay con pausa al hover/focus
+  // Crear barras dinámicas
+  progressContainer.innerHTML = items.length > 1
+    ? [...items].map((_, i) =>
+      `<div class="relative h-1 w-12 overflow-hidden rounded bg-gray-300">
+         <div data-bar="${i}" class="absolute left-0 top-0 h-full w-full origin-left scale-x-0 bg-blue-500"></div>
+       </div>`
+    ).join('')
+    : '';
+
+  const bars = progressContainer.querySelectorAll('[data-bar]');
+  let activeIndex = 0;
   let timer;
-  const start = () => { stop(); timer = setInterval(() => next?.click(), Number({autoplayMs} ?? 4000)); };
-  const stop = () => timer && clearInterval(timer);
 
-  vp?.addEventListener('pointerenter', stop);
-  vp?.addEventListener('pointerleave', start);
-  vp?.addEventListener('focusin', stop);
-  vp?.addEventListener('focusout', start);
+  // Actualizar barra activa con scaleX
+  const updateBars = (index) => {
+    bars.forEach((bar, i) => {
+      bar.style.transition = "none";
+      bar.style.transform = "scaleX(0)";
 
+      if (i === index) {
+        // Forzar reflow para reiniciar animación
+        bar.getBoundingClientRect();
+        bar.style.transition = `transform ${AUTOPLAY_MS}ms linear`;
+        bar.style.transform = "scaleX(1)";
+      }
+    });
+  };
+
+  // Funciones de navegación
+  const goTo = (index) => {
+    if (index < 0) index = items.length - 1;
+    if (index >= items.length) index = 0;
+    vp.scrollTo({ left: items[index].offsetLeft, behavior: 'smooth' });
+    activeIndex = index;
+    updateBars(activeIndex);
+  };
+
+  const goNext = () => goTo(activeIndex + 1);
+  const goPrev = () => goTo(activeIndex - 1);
+
+  prev?.addEventListener('click', goPrev);
+  next?.addEventListener('click', goNext);
+
+  // Autoplay
+  const start = () => {
+    stop();
+    if (items.length > 1) {
+      updateBars(activeIndex);
+      timer = setInterval(goNext, AUTOPLAY_MS);
+    }
+  };
+  const stop = () => {
+    if (timer) clearInterval(timer);
+  };
+
+  vp.addEventListener('pointerenter', stop);
+  vp.addEventListener('pointerleave', start);
+
+  // Inicializar
+  updateBars(activeIndex);
   start();
+})();
 </script>
