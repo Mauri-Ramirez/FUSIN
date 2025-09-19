@@ -1,91 +1,61 @@
 ---
+import SectionTitle from './SectionTitle.astro';
 import { servicios } from '../data/services.js';
+
+const palettes = [
+  { bg: 'from-emerald-50 to-emerald-100', text: 'text-emerald-900' },
+  { bg: 'from-sky-50 to-sky-100', text: 'text-sky-900' },
+  { bg: 'from-amber-50 to-amber-100', text: 'text-amber-900' },
+  { bg: 'from-rose-50 to-rose-100', text: 'text-rose-900' },
+  { bg: 'from-indigo-50 to-indigo-100', text: 'text-indigo-900' },
+  { bg: 'from-lime-50 to-lime-100', text: 'text-lime-900' },
+];
 ---
 
-<section id="servicios" class="py-16">
-  <div class="container">
-    <slot name="title" />
+<section id="servicios" class="py-20 scroll-mt-20">
+  <div class="container relative">
+    <SectionTitle 
+      title="Servicios" 
+      subtitle="Soluciones para hogar, comercio e industria" 
+    />
+  </div>
 
-    <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {servicios.map((s, i) => (
-        <li
-          class="service-card group [perspective:1200px] cursor-pointer"
-          data-index={i}
+  <!-- Cards apiladas -->
+  <div class="relative mx-auto w-full max-w-5xl px-4 sm:px-6 space-y-6">
+    {servicios.map((s, i) => {
+      const pal = palettes[i % palettes.length];
+      const z = 10 + i;
+
+      return (
+        <article
+          class={`sticky top-32 bg-gradient-to-br ${pal.bg} ${pal.text} rounded-2xl w-full mx-auto overflow-hidden`}
+          style={`z-index:${z};`}
         >
-          <div
-            class="card-inner relative h-80 w-full rounded-2xl transition-transform duration-700 ease-in-out [transform-style:preserve-3d]"
-          >
-            <!-- Frente -->
-            <div class="absolute inset-0 rounded-2xl overflow-hidden [backface-visibility:hidden]">
+          <div class="flex flex-col md:flex-row">
+            <!-- Texto -->
+            <div class="flex-1 p-6 md:p-8">
+              <h3 class="text-2xl font-bold tracking-tight">{s.title}</h3>
+              {Array.isArray(s.desc) ? (
+                <ul class="mt-3 list-disc list-inside space-y-2 text-base leading-relaxed">
+                  {s.desc.map((step) => <li>{step}</li>)}
+                </ul>
+              ) : (
+                <p class="mt-3 text-base leading-relaxed">{s.desc}</p>
+              )}
+            </div>
+
+            <!-- Imagen -->
+            <div class="md:w-1/2">
               <img
                 src={s.img}
                 alt={s.title}
-                class="h-full w-full object-cover"
+                loading="lazy"
+                class="w-full h-64 md:h-full object-cover"
               />
-              <div class="absolute inset-0 flex items-end bg-black/40 p-4">
-                <h3 class="text-lg font-semibold text-white">{s.title}</h3>
-              </div>
-            </div>
-
-            <!-- Reverso alternativo -->
-            <div
-              class="absolute inset-0 flex flex-col justify-center rounded-2xl bg-gradient-to-br from-emerald-50 via-white to-emerald-100 border border-emerald-300 p-6 text-left text-emerald-900 [transform:rotateY(180deg)] [backface-visibility:hidden]"
-            >
-              <h4 class="mb-3 text-lg font-semibold text-emerald-700">{s.title}</h4>
-              {
-                Array.isArray(s.desc) ? (
-                  <ul class="list-disc list-inside space-y-2 text-base leading-relaxed">
-                    {s.desc.map((step) => (
-                      <li>{step}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p class="text-base leading-relaxed">{s.desc}</p>
-                )
-              }
             </div>
           </div>
-        </li>
-      ))}
-    </ul>
+        </article>
+      );
+    })}
   </div>
-
-  <script>
-    const cards = document.querySelectorAll('.service-card');
-    cards.forEach((card) => {
-      card.addEventListener('click', () => {
-        const isAlreadyFlipped = card.classList.contains('flipped');
-        cards.forEach((c) => c.classList.remove('flipped'));
-        if (!isAlreadyFlipped) card.classList.add('flipped');
-      });
-    });
-  </script>
 </section>
-
-<style>
-.service-card .card-inner {
-  transform: rotateY(0deg);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition:
-    transform 0.7s ease-in-out,
-    box-shadow 0.7s ease-in-out 0.1s;
-}
-
-.service-card.flipped .card-inner {
-  transform: rotateY(180deg);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-}
-
-@media (hover: hover) {
-  .service-card:hover .card-inner {
-    transform: rotateY(180deg);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-  }
-}
-
-@media (max-width: 640px) {
-  .service-card .card-inner {
-    height: 300px;
-  }
-}
-</style>

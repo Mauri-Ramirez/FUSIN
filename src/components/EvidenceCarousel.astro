@@ -10,16 +10,19 @@
  * - Barra de progreso minimalista responsive (Tailwind).
  * - Uso de transform: scaleX para mejor rendimiento (GPU).
  */
+import SectionTitle from "./SectionTitle.astro";
 const { images = [] } = Astro.props;
 ---
 
 <section id="evidencias" class="py-16">
   <div class="container">
     <!-- Título -->
-    <div class="mx-auto mb-10 max-w-2xl text-center">
-      <h2 class="text-3xl font-semibold">Evidencias de trabajos</h2>
-      <p class="mt-3 text-slate-600">Antes / después y registros fotográficos reales.</p>
-    </div>
+    <SectionTitle 
+    title="Evidencias de trabajos" 
+    subtitle="Antes / después y registros fotográficos reales." 
+    />  
+
+
 
     <div class="relative">
       <!-- Botones -->
